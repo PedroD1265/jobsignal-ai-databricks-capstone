@@ -1,7 +1,9 @@
 """Create a Lakebase synced table for the Spark Gold Delta table.
 
-Run after pipelines/jobs_spark_pipeline.py. The script uses the documented
-Lakebase Autoscaling synced-table API through the Databricks SDK.
+Run this Databricks source notebook after pipelines/jobs_spark_pipeline.py.
+The fast path auto-detects the current Unity Catalog catalog, so no environment
+variables are required in the bootcamp workspace. Environment variables remain
+available as overrides for portability.
 """
 
 from __future__ import annotations
@@ -15,13 +17,29 @@ from databricks.sdk.service.postgres import (
     SyncedTableSyncedTableSpecSyncedTableSchedulingPolicy,
 )
 
-SOURCE_TABLE = os.environ["JOBSIGNAL_SOURCE_TABLE"]
-SYNCED_TABLE_ID = os.environ["JOBSIGNAL_SYNCED_TABLE_ID"]
+CURRENT_CATALOG = spark.sql("SELECT current_catalog() AS catalog").first()["catalog"]
+SOURCE_TABLE = os.getenv(
+    "JOBSIGNAL_SOURCE_TABLE",
+    f"{CURRENT_CATALOG}.jobsignal_capstone.gold_jobs",
+)
+SYNCED_TABLE_ID = os.getenv(
+    "JOBSIGNAL_SYNCED_TABLE_ID",
+    f"{CURRENT_CATALOG}.jobsignal_capstone.gold_jobs_synced",
+)
 LAKEBASE_BRANCH = os.getenv(
     "LAKEBASE_BRANCH",
     "projects/dataexpert-support-app/branches/production",
 )
 POSTGRES_DATABASE = os.getenv("PGDATABASE", "databricks_postgres")
+
+print(
+    {
+        "source_table": SOURCE_TABLE,
+        "synced_table_id": SYNCED_TABLE_ID,
+        "lakebase_branch": LAKEBASE_BRANCH,
+        "postgres_database": POSTGRES_DATABASE,
+    }
+)
 
 w = WorkspaceClient()
 
