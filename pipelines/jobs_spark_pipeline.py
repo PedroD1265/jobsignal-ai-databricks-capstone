@@ -6,7 +6,7 @@ The pipeline intentionally keeps ingestion separate from transformation:
 
 Bronze: raw normalized API records + ingestion metadata
 Silver: cleaned text, deduplication, data-quality scoring, skill extraction
-Gold: trusted Data/AI job opportunities ready for application serving
+Gold: trusted job opportunities ready for application serving; Data/AI relevance is retained as a ranking signal
 
 The Gold Delta table is designed to be synced to Lakebase with a Databricks
 Lakebase synced table (reverse ETL). See scripts/create_synced_table.py.
@@ -194,7 +194,7 @@ def build_silver(bronze: DataFrame) -> DataFrame:
 
 def build_gold(silver: DataFrame) -> DataFrame:
     return (
-        silver.filter(F.col("is_high_quality") & F.col("is_data_ai_role"))
+        silver.filter(F.col("is_high_quality"))
         .select(
             "job_id",
             "source",
@@ -212,6 +212,7 @@ def build_gold(silver: DataFrame) -> DataFrame:
             "ingested_at_ts",
             "quality_score",
             "relevance_score",
+            "is_data_ai_role",
             "quality_flags",
             "extracted_skills",
             "dedup_key",
@@ -250,7 +251,8 @@ metrics = {
     "bronze_rows": bronze_df.count(),
     "silver_rows": silver_df.count(),
     "gold_rows": gold_df.count(),
-    "rejected_or_non_target": silver_df.filter(~(F.col("is_high_quality") & F.col("is_data_ai_role"))).count(),
+    "low_quality_rows": silver_df.filter(~F.col("is_high_quality")).count(),
+    "data_ai_rows": silver_df.filter(F.col("is_data_ai_role")).count(),
     "gold_table": GOLD_TABLE,
 }
 print(metrics)
