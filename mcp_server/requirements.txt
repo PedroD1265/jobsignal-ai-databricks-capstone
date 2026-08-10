@@ -1,0 +1,6 @@
+fastmcp>=2.0,<3
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+psycopg2-binary>=2.9,<3
+databricks-sdk>=0.60,<1
+sentence-transformers>=3.0,<6

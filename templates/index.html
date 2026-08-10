@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JobSignal AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">DATABRICKS AI DATA ENGINEERING CAPSTONE</div>
+        <h1>JobSignal AI</h1>
+        <p class="hero-copy">A trust-aware Data & AI job hunting copilot that turns noisy job feeds into ranked, explainable opportunities — then helps you act on them.</p>
+      </div>
+      <div class="status-pill" id="systemStatus"><span class="dot"></span>Loading pipeline status…</div>
+    </header>
+
+    <section class="metric-grid" aria-label="Pipeline and application metrics">
+      <article class="metric-card"><span>Trusted jobs</span><strong id="metricJobs">—</strong><small>Gold → Lakebase</small></article>
+      <article class="metric-card"><span>Avg. quality</span><strong id="metricQuality">—</strong><small>Explainable Spark score</small></article>
+      <article class="metric-card"><span>Embedded jobs</span><strong id="metricEmbedded">—</strong><small>MiniLM + pgvector</small></article>
+      <article class="metric-card"><span>Applications</span><strong id="metricApps">—</strong><small>Persistent Lakebase state</small></article>
+    </section>
+
+    <section class="layout">
+      <div class="main-column">
+        <article class="panel search-panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">SEMANTIC MATCHING</div>
+              <h2>Find roles that actually fit</h2>
+            </div>
+            <button class="secondary" id="embedButton" type="button">Embed new Gold jobs</button>
+          </div>
+          <form id="searchForm" class="search-form">
+            <input id="query" type="text" autocomplete="off" value="remote data engineering roles using Python SQL Spark and Databricks" aria-label="Job search query" />
+            <button type="submit">Search trusted jobs</button>
+          </form>
+          <div class="hint">Ranking = semantic similarity + skill overlap + source quality. Results preserve source and apply links.</div>
+          <div id="searchMessage" class="inline-message"></div>
+          <div id="results" class="results"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">ACTION LAYER</div>
+              <h2>Application pipeline</h2>
+            </div>
+            <button class="secondary" id="refreshApplications" type="button">Refresh</button>
+          </div>
+          <div id="pipeline" class="pipeline"></div>
+        </article>
+      </div>
+
+      <aside class="side-column">
+        <article class="panel profile-panel">
+          <div class="eyebrow">PROFILE CONTEXT</div>
+          <h2>Candidate profile</h2>
+          <p class="muted">The same profile is used by the UI and MCP agent to make match scoring explainable.</p>
+          <div id="profileBox" class="profile-box"></div>
+          <button id="demoProfileButton" class="secondary full" type="button">Load demo Data Engineer profile</button>
+        </article>
+
+        <article class="panel data-health">
+          <div class="eyebrow">DATA ENGINEERING</div>
+          <h2>Data health</h2>
+          <div class="flow">
+            <div><b>1</b><span>Remote OK API</span><small>unstructured HTML job text</small></div>
+            <i>↓</i>
+            <div><b>2</b><span>Bronze / Silver / Gold</span><small>Spark cleaning, scoring, dedup</small></div>
+            <i>↓</i>
+            <div><b>3</b><span>Lakebase serving</span><small>synced Gold + operational tables</small></div>
+            <i>↓</i>
+            <div><b>4</b><span>pgvector + MCP agent</span><small>retrieval + persistent actions</small></div>
+          </div>
+          <p class="attribution">Job data source: <a href="https://remoteok.com" rel="follow" target="_blank">Remote OK</a>.</p>
+        </article>
+      </aside>
+    </section>
+  </main>
+
+  <template id="jobTemplate">
+    <article class="job-card">
+      <div class="job-top">
+        <div>
+          <div class="company"></div>
+          <h3 class="job-title"></h3>
+          <div class="meta"></div>
+        </div>
+        <div class="score-box"><strong class="match-score"></strong><span>match</span></div>
+      </div>
+      <div class="score-row">
+        <span class="quality"></span><span class="similarity"></span>
+      </div>
+      <div class="skill-row matched"></div>
+      <div class="skill-row missing"></div>
+      <p class="description"></p>
+      <div class="job-actions">
+        <a class="source-link" target="_blank" rel="noopener">View source</a>
+        <button class="save-button secondary" type="button">Save</button>
+        <button class="track-button" type="button">Track as applied</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

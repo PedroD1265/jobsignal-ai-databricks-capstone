@@ -1,0 +1,17 @@
+command:
+  - python
+  - app.py
+
+env:
+  - name: ENDPOINT_NAME
+    value: "projects/dataexpert-support-app/branches/production/endpoints/primary"
+  - name: JOB_POSTINGS_TABLE
+    value: "jobsignal_capstone.gold_jobs_synced"
+  - name: JOBSIGNAL_SCHEMA
+    value: "jobsignal_app"
+  - name: EMBEDDING_MODEL_NAME
+    value: "sentence-transformers/all-MiniLM-L6-v2"
+  - name: HF_HOME
+    value: "/tmp/huggingface"
+  - name: SENTENCE_TRANSFORMERS_HOME
+    value: "/tmp/huggingface"
